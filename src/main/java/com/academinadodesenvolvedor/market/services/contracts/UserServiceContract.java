@@ -1,0 +1,7 @@
+package com.academinadodesenvolvedor.market.services.contracts;
+
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+public interface UserServiceContract extends UserDetailsService {
+
+}
