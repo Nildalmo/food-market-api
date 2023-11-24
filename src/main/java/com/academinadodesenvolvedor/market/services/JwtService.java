@@ -8,7 +8,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -28,7 +27,7 @@ public class JwtService  implements JwtServiceContract {
 
     @Override
     public DecodedJWT decode(String jwt) throws Exception {
-        return null;
+        return this.getVerifier().verify(jwt);
     }
 
     @Override
@@ -49,5 +48,18 @@ public class JwtService  implements JwtServiceContract {
        @Override
         public JWTVerifier getVerifier() throws Exception{
         return JWT.require(this.getAlgorithm()).build();
+    }
+    @Override
+    public boolean isTokenValid(String jwt){
+        try {
+             DecodedJWT claim = this.decode(jwt);
+             LocalDateTime dateExpiration = claim.getExpiresAt()
+                     .toInstant()
+                     .atZone(ZoneId.systemDefault())
+                     .toLocalDateTime();
+             return !LocalDateTime.now().isAfter(dateExpiration);
+        }catch (Exception e) {
+            return false;
+        }
     }
 }
