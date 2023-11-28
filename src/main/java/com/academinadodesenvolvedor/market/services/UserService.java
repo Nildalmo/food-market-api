@@ -24,7 +24,7 @@ public class UserService implements UserServiceContract {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return this.userRepository.findByEmail(username)
-                .orElseThrow(() ->new UsernameNotFoundException("Ussuário invalido"));
+                .orElseThrow(() ->new UsernameNotFoundException("Email ou/e senha inválidos."));
     }
 
     @Override
