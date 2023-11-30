@@ -4,7 +4,11 @@ import com.academinadodesenvolvedor.market.execptions.ResourceNotFoundException;
 import com.academinadodesenvolvedor.market.models.Product;
 import com.academinadodesenvolvedor.market.repositories.ProductRepository;
 import com.academinadodesenvolvedor.market.services.contracts.ProductServiceContract;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ProductService implements ProductServiceContract{
@@ -33,6 +37,16 @@ public class ProductService implements ProductServiceContract{
     public Product getProductById(Long productId) {
         return this.repository.findById(productId)
                 .orElseThrow(()->new ResourceNotFoundException("Produto não encontrado."));
+    }
+
+    @Override
+    public List<Product> getProducts() {
+        return this.repository.findAll();
+    }
+
+    @Override
+    public Page<Product> getProducts(Pageable pageable) {
+        return this.repository.findAll(pageable);
     }
 }
 

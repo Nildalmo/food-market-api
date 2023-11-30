@@ -1,5 +1,4 @@
 package com.academinadodesenvolvedor.market.controllers;
-
 import com.academinadodesenvolvedor.market.DTOs.ProductDTO;
 import com.academinadodesenvolvedor.market.models.Product;
 import com.academinadodesenvolvedor.market.models.Store;
@@ -7,7 +6,8 @@ import com.academinadodesenvolvedor.market.requests.CreateProductRequest;
 import com.academinadodesenvolvedor.market.services.contracts.ProductServiceContract;
 import com.academinadodesenvolvedor.market.services.contracts.StoreServiceContract;
 import jakarta.validation.Valid;
-import lombok.Data;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/products")
 @RestController
 public class ProductController {
-
     private final ProductServiceContract productService;
-
     private final StoreServiceContract storeService;
 
     public ProductController(ProductServiceContract productService,
@@ -26,6 +24,14 @@ public class ProductController {
         this.storeService = storeService;
     }
 
+ @GetMapping
+ private ResponseEntity<Page<ProductDTO>> getProducts(Pageable pageable){
+    Page<Product> productsPage = this. productService.getProducts(pageable);
+    Page<ProductDTO> productDTOS = productsPage.map(ProductDTO::new);
+
+    return new ResponseEntity<>(productDTOS, HttpStatus.OK);
+
+ }
 
     @PostMapping
     private ResponseEntity<ProductDTO> create(@Valid @RequestBody CreateProductRequest request) {
@@ -38,6 +44,12 @@ public class ProductController {
 
     }
 
+    @GetMapping("/{id}")
+    private ResponseEntity<ProductDTO> getById(@PathVariable Long id) {
+        Product product = this.productService.getProductById(id);
+        return new ResponseEntity<>(new ProductDTO(product), HttpStatus.OK);
+
+    }
     @PutMapping("/{id}")
     private ResponseEntity<ProductDTO> update(@PathVariable Long id,
                                               @RequestBody CreateProductRequest request){

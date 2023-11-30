@@ -1,5 +1,4 @@
 package com.academinadodesenvolvedor.market.controllers;
-
 import com.academinadodesenvolvedor.market.DTOs.LoginDTO;
 import com.academinadodesenvolvedor.market.DTOs.UserDTO;
 import com.academinadodesenvolvedor.market.models.User;
@@ -7,7 +6,6 @@ import com.academinadodesenvolvedor.market.requests.CreateUserRequest;
 import com.academinadodesenvolvedor.market.requests.LoginRequest;
 import com.academinadodesenvolvedor.market.services.contracts.JwtServiceContract;
 import com.academinadodesenvolvedor.market.services.contracts.UserServiceContract;
-import com.auth0.jwt.JWT;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
