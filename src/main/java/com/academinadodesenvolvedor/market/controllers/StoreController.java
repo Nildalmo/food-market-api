@@ -6,61 +6,73 @@ import com.academinadodesenvolvedor.market.services.contracts.StoreServiceContra
 import com.academinadodesenvolvedor.market.utils.UploadFile;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-@RequestMapping( "/stores")
+@RequestMapping("/stores")
 @RestController
-
 public class StoreController {
     private final StoreServiceContract storeService;
 
-        @Autowired
-        public StoreController(StoreServiceContract storeService){
-            this.storeService = storeService;
-        }
+    @Autowired
+    public StoreController(StoreServiceContract storeService){
+        this.storeService = storeService;
+    }
+
     @PostMapping
-    public ResponseEntity<StoreDTO> create(@RequestBody @Valid CreateStoreRequest request) {
+    public ResponseEntity<StoreDTO> create(@RequestBody @Valid CreateStoreRequest request){
         Store store = request.convert();
         try {
-
             if (request.getCover() != null) {
                 String coverName = UploadFile.storeFile(request.getCover().split(",")[1],
                         new String[]{"stores", "logos"});
                 store.setCoverUrl("stores/logos/"+coverName);
             }
-            if(request.getLogo() != null) {
-                String LogoName = UploadFile.storeFile(request.getLogo().split(",")[1],
-                        new String[] {"stores", "covers"});
-                store.setLogoUrl("stores/logos/"+LogoName);
+            //@alexjuniorreal @santiago_luiseduardo @__matheusaugusto__ @nildalmosilva
+            if(request.getLogo() != null){
+                String logoName = UploadFile.storeFile(request.getLogo().split(",")[1],
+                        new String[]{"stores", "covers"});
+                store.setLogoUrl("stores/logos/"+logoName);
             }
-
-    }catch (IOException exception) {
+        }catch (IOException exception){
             throw new RuntimeException("Erro ao salvar arquivos");
+        }
 
-    }
-    this.storeService.createStore(store);
+        this.storeService.createStore(store);
         return new ResponseEntity<>(new StoreDTO(store), HttpStatus.CREATED);
     }
-        @PutMapping( "/{id}")
 
+    @GetMapping
+    public ResponseEntity<Page<StoreDTO>> list(Pageable page){
+        Page<Store> stores = this.storeService.getStores(page);
 
-    public ResponseEntity<StoreDTO> update(@PathVariable Long id, @RequestBody @Valid CreateStoreRequest request){
-         Store store = this.storeService.updateStore(id, request);
-         return new ResponseEntity<>(new StoreDTO(store), HttpStatus.CREATED);
+        Page<StoreDTO> storeDTOS = stores.map(StoreDTO::new);
+
+        return new ResponseEntity<>(storeDTOS, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<StoreDTO> store(@PathVariable Long id){
+        Store store  = this.storeService.getStoreById(id);
+
+        return new ResponseEntity<>(new StoreDTO(store), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<StoreDTO> update(@PathVariable Long id, @RequestBody CreateStoreRequest request){
+        Store store = this.storeService.updateStore(id,request);
+        return new ResponseEntity<>(new StoreDTO(store), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
+    public ResponseEntity delete(@PathVariable Long id){
         Store store = this.storeService.getStoreById(id);
         this.storeService.deleteStore(store);
-        return  new ResponseEntity(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    }
-
-
-
-
+}

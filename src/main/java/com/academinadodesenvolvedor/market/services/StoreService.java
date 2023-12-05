@@ -5,7 +5,11 @@ import com.academinadodesenvolvedor.market.repositories.StoreRepository;
 import com.academinadodesenvolvedor.market.requests.CreateStoreRequest;
 import com.academinadodesenvolvedor.market.services.contracts.StoreServiceContract;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class StoreService implements StoreServiceContract {
@@ -42,6 +46,16 @@ public class StoreService implements StoreServiceContract {
         this.storeRepository.delete(store);
 
 
+    }
+
+    @Override
+    public List<Store> getStores() {
+        return this.storeRepository.findAll();
+    }
+
+    @Override
+    public Page<Store> getStores(Pageable pageable) {
+        return this.storeRepository.findAll(pageable);
     }
 }
 
